@@ -1,0 +1,2052 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Max Messenger Simulator | Мобильная версия</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361EE;
+            --primary-light: #4895EF;
+            --primary-dark: #3A0CA3;
+            --secondary: #7209B7;
+            --accent: #F72585;
+            --success: #4CC9F0;
+            --warning: #FFD166;
+            --danger: #EF476F;
+            
+            --text-dark: #2B2D42;
+            --text-light: #8D99AE;
+            --bg-light: #F8F9FA;
+            --bg-white: #FFFFFF;
+            --bg-gray: #EDF2F4;
+            --bg-dark: #121826;
+            
+            --radius-sm: 12px;
+            --radius-md: 20px;
+            --radius-lg: 28px;
+            --radius-xl: 40px;
+            
+            --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.12);
+            --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.16);
+            
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Rubik', 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        body.large-fonts {
+            font-size: 1.2em;
+        }
+
+        /* Основной контейнер */
+        .simulator-container {
+            display: flex;
+            width: 100%;
+            max-width: 1400px;
+            gap: 40px;
+            margin: 0 auto;
+            align-items: flex-start;
+        }
+
+        /* Левая панель - инструкции */
+        .instruction-panel {
+            flex: 1;
+            min-width: 300px;
+            max-width: 450px;
+            background: var(--bg-white);
+            border-radius: var(--radius-xl);
+            padding: 30px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .panel-header {
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 3px solid var(--bg-gray);
+        }
+
+        .logo-large {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .logo-icon-large {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 800;
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .panel-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--primary-dark);
+            margin-bottom: 8px;
+        }
+
+        .panel-subtitle {
+            font-size: 16px;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        /* Контролы сложности */
+        .difficulty-controls {
+            background: var(--bg-gray);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .difficulty-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .difficulty-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .difficulty-btn {
+            flex: 1;
+            padding: 16px 10px;
+            border: 3px solid transparent;
+            border-radius: var(--radius-md);
+            background: white;
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .difficulty-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .difficulty-btn.active {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.1), rgba(114, 9, 183, 0.1));
+            color: var(--primary-dark);
+        }
+
+        .difficulty-icon {
+            font-size: 24px;
+        }
+
+        /* Голосовое управление */
+        .voice-controls {
+            background: linear-gradient(135deg, #4CC9F0, #4361EE);
+            border-radius: var(--radius-lg);
+            padding: 25px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .voice-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .voice-title {
+            font-size: 18px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .voice-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .voice-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .voice-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .voice-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .voice-instruction {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-md);
+            padding: 15px;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        /* Инструкции и подсказки */
+        .instruction-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .step-item {
+            background: var(--bg-light);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            border-left: 5px solid transparent;
+            transition: var(--transition);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .step-item:hover {
+            background: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .step-item.active {
+            border-left-color: var(--accent);
+            background: linear-gradient(135deg, rgba(247, 37, 133, 0.05), rgba(67, 97, 238, 0.05));
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 5px;
+            color: var(--text-dark);
+        }
+
+        .step-description {
+            font-size: 14px;
+            color: var(--text-light);
+            line-height: 1.4;
+        }
+
+        /* Кнопка помощи */
+        .help-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--secondary));
+            color: white;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .help-button:hover {
+            transform: scale(1.1) rotate(15deg);
+        }
+
+        /* Симулятор телефона */
+        .phone-simulator {
+            flex: 2;
+            min-width: 300px;
+            max-width: 500px;
+            position: relative;
+            background: #1a1a1a;
+            border-radius: 40px;
+            padding: 30px 15px;
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            border: 12px solid #000;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-self: center;
+        }
+
+        /* Динамик и камера */
+        .phone-top-bar {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 25px;
+            background: #000;
+            border-radius: 0 0 15px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding-top: 5px;
+        }
+
+        .speaker {
+            width: 60px;
+            height: 6px;
+            background: #333;
+            border-radius: 3px;
+        }
+
+        .camera {
+            width: 12px;
+            height: 12px;
+            background: #222;
+            border-radius: 50%;
+            border: 2px solid #444;
+        }
+
+        /* Контент телефона */
+        .phone-content {
+            flex: 1;
+            background: var(--bg-white);
+            border-radius: 30px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Навигация приложения */
+        .app-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 25px 20px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-radius: 30px 30px 0 0;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .back-button {
+            width: 50px;
+            height: 50px;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 22px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .header-title h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .header-title p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 15px;
+        }
+
+        .header-action {
+            width: 50px;
+            height: 50px;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .header-action:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Вкладки приложения */
+        .app-tabs {
+            display: flex;
+            background: var(--bg-light);
+            border-bottom: 2px solid var(--bg-gray);
+        }
+
+        .app-tab {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: var(--transition);
+            border-bottom: 3px solid transparent;
+        }
+
+        .app-tab:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .app-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            background: white;
+        }
+
+        /* Основной контент приложения */
+        .app-content {
+            flex: 1;
+            overflow-y: auto;
+            background: white;
+            padding: 20px;
+        }
+
+        /* Крупные элементы для мобильного интерфейса */
+        .large-contact-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .large-contact-item {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            background: var(--bg-light);
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: var(--transition);
+            border: 3px solid transparent;
+            gap: 20px;
+        }
+
+        .large-contact-item:hover {
+            background: white;
+            box-shadow: var(--shadow-sm);
+            transform: translateY(-2px);
+            border-color: var(--primary-light);
+        }
+
+        .large-contact-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, var(--primary-light), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .large-contact-info {
+            flex: 1;
+        }
+
+        .large-contact-name {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+        }
+
+        .large-contact-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+            color: var(--text-light);
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .status-online {
+            background: var(--success);
+            box-shadow: 0 0 8px rgba(76, 201, 240, 0.5);
+        }
+
+        .status-offline {
+            background: var(--text-light);
+        }
+
+        .unread-badge {
+            background: var(--accent);
+            color: white;
+            padding: 10px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 18px;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        /* Экран чата */
+        .chat-screen {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            gap: 20px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 10px;
+        }
+
+        .message {
+            max-width: 85%;
+            padding: 20px;
+            border-radius: 25px;
+            position: relative;
+            animation: messageAppear 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            line-height: 1.4;
+            font-size: 18px;
+        }
+
+        @keyframes messageAppear {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .message.received {
+            align-self: flex-start;
+            background: var(--bg-gray);
+            border-bottom-left-radius: 8px;
+        }
+
+        .message.sent {
+            align-self: flex-end;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            border-bottom-right-radius: 8px;
+        }
+
+        .message-time {
+            font-size: 14px;
+            opacity: 0.7;
+            margin-top: 8px;
+            text-align: right;
+        }
+
+        /* Крупная клавиатура */
+        .large-input-area {
+            background: var(--bg-light);
+            border-radius: var(--radius-xl);
+            padding: 20px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .large-input {
+            flex: 1;
+            padding: 25px;
+            border: 3px solid var(--bg-gray);
+            border-radius: var(--radius-lg);
+            font-size: 20px;
+            font-family: inherit;
+            resize: none;
+            min-height: 80px;
+            transition: var(--transition);
+        }
+
+        .large-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+        .large-send-button {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .large-send-button:hover {
+            transform: scale(1.1);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Крупные быстрые действия */
+        .quick-actions-large {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .quick-action-large {
+            flex: 1;
+            padding: 25px 15px;
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            border: none;
+            border-radius: var(--radius-lg);
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quick-action-large:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .quick-action-large i {
+            font-size: 30px;
+        }
+
+        /* Кнопка Home */
+        .phone-home-button {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .phone-home-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(-50%) scale(1.1);
+        }
+
+        /* Визуальные подсказки */
+        .visual-hint {
+            position: absolute;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .cursor-animation {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(247, 37, 133, 0.2);
+            border: 3px solid var(--accent);
+            animation: pulse 2s infinite;
+            position: absolute;
+            pointer-events: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 0.7;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+        }
+
+        .highlight-area {
+            position: absolute;
+            border: 4px solid var(--accent);
+            border-radius: 20px;
+            background: rgba(247, 37, 133, 0.1);
+            animation: highlightPulse 1.5s infinite;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        @keyframes highlightPulse {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(247, 37, 133, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 15px rgba(247, 37, 133, 0);
+            }
+        }
+
+        /* Скриншоты и скринкасты */
+        .screenshot-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .screenshot-content {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: 30px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .screenshot-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--bg-gray);
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 1200px) {
+            .simulator-container {
+                flex-direction: column;
+                align-items: center;
+                gap: 30px;
+            }
+            
+            .instruction-panel {
+                max-width: 100%;
+                order: 2;
+            }
+            
+            .phone-simulator {
+                order: 1;
+                max-width: 400px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .phone-simulator {
+                max-width: 350px;
+                border-radius: 30px;
+                padding: 20px 10px;
+            }
+            
+            .large-contact-avatar {
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+            }
+            
+            .large-contact-name {
+                font-size: 20px;
+            }
+            
+            .help-button {
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+                bottom: 20px;
+                right: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .instruction-panel {
+                padding: 20px;
+            }
+            
+            .phone-simulator {
+                max-width: 320px;
+            }
+            
+            .app-header {
+                padding: 20px 15px 15px;
+            }
+            
+            .back-button,
+            .header-action {
+                width: 45px;
+                height: 45px;
+                font-size: 20px;
+            }
+            
+            .header-title h1 {
+                font-size: 20px;
+            }
+        }
+
+        /* Анимация загрузки */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-dark), var(--secondary));
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .loading-spinner {
+            width: 80px;
+            height: 80px;
+            border: 8px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="large-fonts">
+    <!-- Экран загрузки -->
+    <div class="loading-overlay" id="loading-screen">
+        <div class="loading-spinner"></div>
+        <div>Загрузка симулятора Max Messenger</div>
+        <div style="font-size: 16px; opacity: 0.8;">Подготовка к обучению...</div>
+    </div>
+
+    <!-- Основной контейнер -->
+    <div class="simulator-container">
+        <!-- Левая панель с инструкциями -->
+        <div class="instruction-panel">
+            <div class="panel-header">
+                <div class="logo-large">
+                    <div class="logo-icon-large">M</div>
+                    <div>
+                        <h1 class="panel-title">Max Messenger</h1>
+                        <div class="panel-subtitle">Симулятор мобильной версии</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Выбор уровня сложности -->
+            <div class="difficulty-controls">
+                <div class="difficulty-title">
+                    <i class="fas fa-sliders-h"></i>
+                    Уровень сложности
+                </div>
+                <div class="difficulty-buttons">
+                    <button class="difficulty-btn active" data-level="basic">
+                        <i class="difficulty-icon fas fa-user-graduate"></i>
+                        <span>Базовый</span>
+                        <small>Для новичков</small>
+                    </button>
+                    <button class="difficulty-btn" data-level="advanced">
+                        <i class="difficulty-icon fas fa-user-tie"></i>
+                        <span>Расширенный</span>
+                        <small>Для опытных</small>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Голосовое сопровождение -->
+            <div class="voice-controls">
+                <div class="voice-header">
+                    <div class="voice-title">
+                        <i class="fas fa-volume-up"></i>
+                        Голосовые инструкции
+                    </div>
+                    <div class="voice-buttons">
+                        <button class="voice-btn" id="voice-play">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <button class="voice-btn" id="voice-pause">
+                            <i class="fas fa-pause"></i>
+                        </button>
+                        <button class="voice-btn" id="voice-stop">
+                            <i class="fas fa-stop"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="voice-instruction" id="current-instruction">
+                    Добро пожаловать в симулятор Max Messenger! Нажмите кнопку воспроизведения для начала обучения.
+                </div>
+            </div>
+
+            <!-- Пошаговые инструкции -->
+            <div class="instruction-steps" id="instruction-steps">
+                <div class="step-item active" data-step="1">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <div class="step-title">Навигация по контактам</div>
+                        <div class="step-description">Используйте крупные кнопки для просмотра списка контактов</div>
+                    </div>
+                </div>
+                <div class="step-item" data-step="2">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <div class="step-title">Отправка сообщений</div>
+                        <div class="step-description">Напишите и отправьте сообщение в чат</div>
+                    </div>
+                </div>
+                <div class="step-item" data-step="3">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <div class="step-title">Голосовые сообщения</div>
+                        <div class="step-description">Запишите и отправьте голосовое сообщение</div>
+                    </div>
+                </div>
+                <div class="step-item" data-step="4">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <div class="step-title">Настройки чата</div>
+                        <div class="step-description">Настройте параметры уведомлений и внешний вид</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Кнопки управления обучением -->
+            <div class="quick-actions-large">
+                <button class="quick-action-large" id="prev-step">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Назад</span>
+                </button>
+                <button class="quick-action-large" id="next-step">
+                    <i class="fas fa-arrow-right"></i>
+                    <span>Далее</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Симулятор телефона -->
+        <div class="phone-simulator">
+            <!-- Верхняя панель телефона -->
+            <div class="phone-top-bar">
+                <div class="camera"></div>
+                <div class="speaker"></div>
+            </div>
+
+            <!-- Контент телефона -->
+            <div class="phone-content">
+                <!-- Шапка приложения -->
+                <div class="app-header">
+                    <div class="header-left">
+                        <button class="back-button" id="back-button">
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                        <div class="header-title">
+                            <h1>Чаты</h1>
+                            <p>5 непрочитанных</p>
+                        </div>
+                    </div>
+                    <div class="header-right">
+                        <button class="header-action" title="Поиск">
+                            <i class="fas fa-search"></i>
+                        </button>
+                        <button class="header-action" title="Новый чат">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Вкладки -->
+                <div class="app-tabs">
+                    <div class="app-tab active" data-tab="chats">Чаты</div>
+                    <div class="app-tab" data-tab="contacts">Контакты</div>
+                    <div class="app-tab" data-tab="calls">Звонки</div>
+                    <div class="app-tab" data-tab="settings">Настройки</div>
+                </div>
+
+                <!-- Контент приложения -->
+                <div class="app-content" id="app-content">
+                    <!-- Список контактов (по умолчанию) -->
+                    <div class="large-contact-list" id="contacts-list">
+                        <!-- Контакты будут добавлены через JS -->
+                    </div>
+
+                    <!-- Экран чата (скрыт по умолчанию) -->
+                    <div class="chat-screen" id="chat-screen" style="display: none;">
+                        <div class="chat-messages" id="chat-messages">
+                            <!-- Сообщения будут добавлены через JS -->
+                        </div>
+                        <div class="large-input-area">
+                            <textarea class="large-input" id="message-input" placeholder="Напишите сообщение..."></textarea>
+                            <button class="large-send-button" id="send-message">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                        <div class="quick-actions-large">
+                            <button class="quick-action-large" id="voice-message">
+                                <i class="fas fa-microphone"></i>
+                                <span>Голос</span>
+                            </button>
+                            <button class="quick-action-large" id="attach-file">
+                                <i class="fas fa-paperclip"></i>
+                                <span>Файл</span>
+                            </button>
+                            <button class="quick-action-large" id="send-emoji">
+                                <i class="fas fa-smile"></i>
+                                <span>Эмодзи</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Экран настроек -->
+                    <div id="settings-screen" style="display: none;">
+                        <div class="large-contact-list">
+                            <div class="large-contact-item" id="settings-notifications">
+                                <div class="large-contact-avatar">
+                                    <i class="fas fa-bell"></i>
+                                </div>
+                                <div class="large-contact-info">
+                                    <div class="large-contact-name">Уведомления</div>
+                                    <div class="large-contact-status">Настройка звука и вибрации</div>
+                                </div>
+                            </div>
+                            <div class="large-contact-item" id="settings-appearance">
+                                <div class="large-contact-avatar">
+                                    <i class="fas fa-palette"></i>
+                                </div>
+                                <div class="large-contact-info">
+                                    <div class="large-contact-name">Внешний вид</div>
+                                    <div class="large-contact-status">Тема, размер шрифта</div>
+                                </div>
+                            </div>
+                            <div class="large-contact-item" id="settings-privacy">
+                                <div class="large-contact-avatar">
+                                    <i class="fas fa-lock"></i>
+                                </div>
+                                <div class="large-contact-info">
+                                    <div class="large-contact-name">Конфиденциальность</div>
+                                    <div class="large-contact-status">Настройки приватности</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Кнопка Home -->
+            <div class="phone-home-button" id="home-button"></div>
+        </div>
+    </div>
+
+    <!-- Кнопка помощи -->
+    <button class="help-button" id="help-button">
+        <i class="fas fa-question"></i>
+    </button>
+
+    <!-- Визуальные подсказки -->
+    <div class="visual-hint" id="cursor-animation"></div>
+    <div class="highlight-area" id="highlight-area"></div>
+
+    <!-- Оверлей для скриншотов -->
+    <div class="screenshot-overlay" id="screenshot-overlay">
+        <div class="screenshot-content">
+            <button class="screenshot-close" id="close-screenshot">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 style="margin-bottom: 20px; color: var(--primary-dark);">Демонстрация функции</h2>
+            <img id="screenshot-image" src="" alt="Демонстрация" style="width: 100%; border-radius: var(--radius-md); margin-bottom: 20px;">
+            <p id="screenshot-text" style="line-height: 1.6;"></p>
+        </div>
+    </div>
+
+    <script>
+        // Основной код симулятора мобильного мессенджера
+        // ===============================================
+
+        // Данные приложения
+        const appData = {
+            currentUser: {
+                name: "Максим",
+                avatar: "М",
+                status: "online"
+            },
+            
+            contacts: [
+                {
+                    id: 1,
+                    name: "Анна Иванова",
+                    avatar: "А",
+                    status: "online",
+                    color: "#4361EE",
+                    lastMessage: "Привет! Как дела?",
+                    time: "12:30",
+                    unread: 3,
+                    isFavorite: true
+                },
+                {
+                    id: 2,
+                    name: "Иван Петров",
+                    avatar: "И",
+                    status: "online",
+                    color: "#7209B7",
+                    lastMessage: "Жду на встрече",
+                    time: "11:45",
+                    unread: 0,
+                    isFavorite: true
+                },
+                {
+                    id: 3,
+                    name: "Мария Сидорова",
+                    avatar: "М",
+                    status: "offline",
+                    color: "#4CC9F0",
+                    lastMessage: "Спасибо за помощь!",
+                    time: "Вчера",
+                    unread: 0,
+                    isFavorite: false
+                },
+                {
+                    id: 4,
+                    name: "Дмитрий Волков",
+                    avatar: "Д",
+                    status: "online",
+                    color: "#F72585",
+                    lastMessage: "Файлы отправил",
+                    time: "10:20",
+                    unread: 2,
+                    isFavorite: false
+                },
+                {
+                    id: 5,
+                    name: "Ольга Новикова",
+                    avatar: "О",
+                    status: "offline",
+                    color: "#FFD166",
+                    lastMessage: "До завтра!",
+                    time: "Ср",
+                    unread: 0,
+                    isFavorite: true
+                }
+            ],
+            
+            messages: {
+                1: [
+                    { id: 1, text: "Привет! Как дела?", time: "12:15", sent: false },
+                    { id: 2, text: "Привет! Всё отлично, работаю над новым проектом", time: "12:16", sent: true },
+                    { id: 3, text: "Это новый мессенджер Max?", time: "12:17", sent: false },
+                    { id: 4, text: "Да, именно! Пытаюсь сделать его максимально удобным", time: "12:18", sent: true }
+                ]
+            },
+            
+            currentChatId: null,
+            currentStep: 1,
+            difficulty: 'basic',
+            voiceEnabled: true,
+            visualHints: true
+        };
+
+        // DOM элементы
+        const elements = {
+            // Инструкции
+            instructionSteps: document.getElementById('instruction-steps'),
+            currentInstruction: document.getElementById('current-instruction'),
+            difficultyButtons: document.querySelectorAll('.difficulty-btn'),
+            
+            // Голосовое управление
+            voicePlay: document.getElementById('voice-play'),
+            voicePause: document.getElementById('voice-pause'),
+            voiceStop: document.getElementById('voice-stop'),
+            
+            // Навигация обучения
+            prevStep: document.getElementById('prev-step'),
+            nextStep: document.getElementById('next-step'),
+            
+            // Телефон
+            contactsList: document.getElementById('contacts-list'),
+            chatScreen: document.getElementById('chat-screen'),
+            chatMessages: document.getElementById('chat-messages'),
+            messageInput: document.getElementById('message-input'),
+            sendMessage: document.getElementById('send-message'),
+            backButton: document.getElementById('back-button'),
+            appContent: document.getElementById('app-content'),
+            
+            // Вкладки
+            appTabs: document.querySelectorAll('.app-tab'),
+            
+            // Помощь и подсказки
+            helpButton: document.getElementById('help-button'),
+            cursorAnimation: document.getElementById('cursor-animation'),
+            highlightArea: document.getElementById('highlight-area'),
+            
+            // Скриншоты
+            screenshotOverlay: document.getElementById('screenshot-overlay'),
+            screenshotImage: document.getElementById('screenshot-image'),
+            screenshotText: document.getElementById('screenshot-text'),
+            closeScreenshot: document.getElementById('close-screenshot'),
+            
+            // Загрузка
+            loadingScreen: document.getElementById('loading-screen')
+        };
+
+        // Текстовые инструкции для голосового сопровождения
+        const voiceInstructions = {
+            basic: {
+                1: "Добро пожаловать в симулятор Max Messenger! Это базовый режим обучения. Начнем с навигации. Обратите внимание на крупные элементы управления. Нажмите на любой контакт, чтобы открыть чат.",
+                2: "Отлично! Теперь вы в чате. Чтобы отправить сообщение, напишите текст в большое поле ввода и нажмите кнопку отправки. Можно также отправить голосовое сообщение или прикрепить файл.",
+                3: "Попробуйте отправить голосовое сообщение. Нажмите большую кнопку 'Голос' и следуйте инструкциям. Это полезная функция для быстрого общения.",
+                4: "Теперь перейдите в настройки. Здесь можно настроить уведомления, внешний вид и конфиденциальность. Попробуйте изменить тему приложения."
+            },
+            advanced: {
+                1: "Выбран расширенный режим. Здесь больше функций и настроек. Начните с изучения жестов навигации: свайп влево для ответа, свайп вправо для архивации.",
+                2: "Используйте расширенные функции чата: цитирование сообщений, пересылка, отметка как непрочитанное. Все эти действия доступны при долгом нажатии на сообщение.",
+                3: "Изучите функцию видеозвонков. Нажмите на кнопку видеозвонка в шапке чата. Обратите внимание на элементы управления во время звонка.",
+                4: "Настройте автоматические ответы и умные уведомления в расширенных настройках. Эти функции помогут оптимизировать ваше общение."
+            }
+        };
+
+        // Фразы для симуляции голосового сопровождения
+        const voicePhrases = [
+            "Отличная работа!",
+            "Продолжайте в том же духе!",
+            "Вы быстро учитесь!",
+            "Попробуйте следующую функцию.",
+            "Не забывайте использовать подсказки.",
+            "Это правильный выбор!",
+            "Молодец! Вы освоили новый навык."
+        ];
+
+        // Инициализация приложения
+        document.addEventListener('DOMContentLoaded', () => {
+            // Симуляция загрузки
+            setTimeout(() => {
+                elements.loadingScreen.style.opacity = '0';
+                setTimeout(() => {
+                    elements.loadingScreen.style.display = 'none';
+                    initApp();
+                }, 500);
+            }, 2000);
+        });
+
+        function initApp() {
+            renderContacts();
+            setupEventListeners();
+            startTutorial();
+            
+            // Включение голосового сопровождения
+            if (appData.voiceEnabled) {
+                speakInstruction(appData.currentStep);
+            }
+            
+            // Показать первую визуальную подсказку
+            if (appData.visualHints) {
+                showVisualHint('contacts');
+            }
+        }
+
+        // Рендеринг списка контактов
+        function renderContacts() {
+            elements.contactsList.innerHTML = '';
+            
+            appData.contacts.forEach(contact => {
+                const contactElement = document.createElement('div');
+                contactElement.className = 'large-contact-item';
+                contactElement.dataset.id = contact.id;
+                
+                const statusClass = contact.status === 'online' ? 'status-online' : 'status-offline';
+                const statusText = contact.status === 'online' ? 'в сети' : 'не в сети';
+                
+                const unreadBadge = contact.unread > 0 ? 
+                    `<div class="unread-badge">${contact.unread}</div>` : '';
+                
+                contactElement.innerHTML = `
+                    <div class="large-contact-avatar" style="background: ${contact.color}">
+                        ${contact.avatar}
+                    </div>
+                    <div class="large-contact-info">
+                        <div class="large-contact-name">${contact.name}</div>
+                        <div class="large-contact-status">
+                            <span class="status-dot ${statusClass}"></span>
+                            <span>${statusText} • ${contact.lastMessage}</span>
+                        </div>
+                    </div>
+                    ${unreadBadge}
+                `;
+                
+                contactElement.addEventListener('click', () => openChat(contact.id));
+                elements.contactsList.appendChild(contactElement);
+            });
+        }
+
+        // Открытие чата
+        function openChat(contactId) {
+            appData.currentChatId = contactId;
+            
+            // Скрываем список контактов и показываем чат
+            elements.contactsList.style.display = 'none';
+            elements.chatScreen.style.display = 'flex';
+            
+            // Обновляем заголовок
+            const contact = appData.contacts.find(c => c.id === contactId);
+            if (contact) {
+                document.querySelector('.header-title h1').textContent = contact.name;
+                document.querySelector('.header-title p').textContent = 'в сети';
+            }
+            
+            // Загружаем сообщения
+            renderMessages(contactId);
+            
+            // Показываем подсказку для отправки сообщения
+            if (appData.currentStep === 2) {
+                showVisualHint('message-input');
+                completeStep(2);
+            }
+            
+            // Воспроизведение звука
+            playSound('open-chat');
+        }
+
+        // Рендеринг сообщений
+        function renderMessages(chatId) {
+            elements.chatMessages.innerHTML = '';
+            
+            const messages = appData.messages[chatId] || [];
+            
+            messages.forEach(msg => {
+                const messageElement = document.createElement('div');
+                messageElement.className = `message ${msg.sent ? 'sent' : 'received'}`;
+                messageElement.innerHTML = `
+                    <div class="message-text">${msg.text}</div>
+                    <div class="message-time">${msg.time}</div>
+                `;
+                elements.chatMessages.appendChild(messageElement);
+            });
+            
+            // Прокрутка вниз
+            elements.chatMessages.scrollTop = elements.chatMessages.scrollHeight;
+        }
+
+        // Отправка сообщения
+        function sendNewMessage() {
+            const text = elements.messageInput.value.trim();
+            if (!text) return;
+            
+            // Добавляем сообщение в историю
+            if (!appData.messages[appData.currentChatId]) {
+                appData.messages[appData.currentChatId] = [];
+            }
+            
+            const newMessage = {
+                id: Date.now(),
+                text: text,
+                time: getCurrentTime(),
+                sent: true
+            };
+            
+            appData.messages[appData.currentChatId].push(newMessage);
+            
+            // Добавляем в UI
+            const messageElement = document.createElement('div');
+            messageElement.className = 'message sent';
+            messageElement.innerHTML = `
+                <div class="message-text">${text}</div>
+                <div class="message-time">${newMessage.time}</div>
+            `;
+            elements.chatMessages.appendChild(messageElement);
+            
+            // Очищаем поле ввода
+            elements.messageInput.value = '';
+            
+            // Прокручиваем вниз
+            elements.chatMessages.scrollTop = elements.chatMessages.scrollHeight;
+            
+            // Симулируем ответ
+            setTimeout(() => simulateReply(), 1000 + Math.random() * 2000);
+            
+            // Воспроизведение звука
+            playSound('send-message');
+            
+            // Завершаем шаг
+            if (appData.currentStep === 2) {
+                completeStep(2);
+                nextStep();
+            }
+        }
+
+        // Симуляция ответа
+        function simulateReply() {
+            const replies = [
+                "Отличная работа!",
+                "Я понял ваше сообщение",
+                "Спасибо за информацию",
+                "Это очень интересно!",
+                "Давайте продолжим обучение",
+                "Вы отлично справляетесь!"
+            ];
+            
+            const reply = replies[Math.floor(Math.random() * replies.length)];
+            
+            const replyMessage = {
+                id: Date.now(),
+                text: reply,
+                time: getCurrentTime(),
+                sent: false
+            };
+            
+            appData.messages[appData.currentChatId].push(replyMessage);
+            
+            const messageElement = document.createElement('div');
+            messageElement.className = 'message received';
+            messageElement.innerHTML = `
+                <div class="message-text">${reply}</div>
+                <div class="message-time">${replyMessage.time}</div>
+            `;
+            elements.chatMessages.appendChild(messageElement);
+            
+            // Прокручиваем вниз
+            elements.chatMessages.scrollTop = elements.chatMessages.scrollHeight;
+            
+            // Воспроизведение звука
+            playSound('receive-message');
+        }
+
+        // Начало обучения
+        function startTutorial() {
+            updateStep(appData.currentStep);
+            
+            // Показать подсказку для первого шага
+            showVisualHint('contact-list');
+            
+            // Включить голосовое сопровождение
+            if (appData.voiceEnabled) {
+                speakInstruction(appData.currentStep);
+            }
+        }
+
+        // Обновление текущего шага
+        function updateStep(stepNumber) {
+            // Обновляем активный шаг в списке
+            document.querySelectorAll('.step-item').forEach(item => {
+                item.classList.remove('active');
+                if (parseInt(item.dataset.step) === stepNumber) {
+                    item.classList.add('active');
+                }
+            });
+            
+            // Обновляем инструкцию
+            const instruction = voiceInstructions[appData.difficulty][stepNumber];
+            elements.currentInstruction.textContent = instruction;
+            
+            appData.currentStep = stepNumber;
+            
+            // Показываем соответствующие подсказки
+            showStepHints(stepNumber);
+        }
+
+        // Показать подсказки для шага
+        function showStepHints(stepNumber) {
+            switch(stepNumber) {
+                case 1:
+                    showVisualHint('contact-list');
+                    break;
+                case 2:
+                    showVisualHint('message-input');
+                    break;
+                case 3:
+                    showVisualHint('voice-button');
+                    break;
+                case 4:
+                    showVisualHint('settings-tab');
+                    break;
+            }
+        }
+
+        // Завершение шага
+        function completeStep(stepNumber) {
+            const stepElement = document.querySelector(`.step-item[data-step="${stepNumber}"]`);
+            if (stepElement) {
+                stepElement.style.background = 'linear-gradient(135deg, rgba(76, 201, 240, 0.1), rgba(67, 97, 238, 0.1))';
+                stepElement.style.borderLeftColor = '#4CC9F0';
+            }
+            
+            playSound('complete-step');
+        }
+
+        // Следующий шаг
+        function nextStep() {
+            if (appData.currentStep < 4) {
+                appData.currentStep++;
+                updateStep(appData.currentStep);
+                
+                if (appData.voiceEnabled) {
+                    speakInstruction(appData.currentStep);
+                }
+                
+                playSound('next-step');
+            } else {
+                // Обучение завершено
+                showNotification('Обучение завершено!', 'Вы успешно освоили основные функции Max Messenger.', 'success');
+                playSound('tutorial-complete');
+            }
+        }
+
+        // Предыдущий шаг
+        function prevStep() {
+            if (appData.currentStep > 1) {
+                appData.currentStep--;
+                updateStep(appData.currentStep);
+                
+                if (appData.voiceEnabled) {
+                    speakInstruction(appData.currentStep);
+                }
+                
+                playSound('prev-step');
+            }
+        }
+
+        // Голосовое сопровождение
+        function speakInstruction(stepNumber) {
+            if (!appData.voiceEnabled) return;
+            
+            const instruction = voiceInstructions[appData.difficulty][stepNumber];
+            const utterance = new SpeechSynthesisUtterance(instruction);
+            
+            // Настройки голоса
+            utterance.lang = 'ru-RU';
+            utterance.rate = 0.9;
+            utterance.pitch = 1;
+            utterance.volume = 1;
+            
+            // Получить русский голос
+            const voices = speechSynthesis.getVoices();
+            const russianVoice = voices.find(voice => voice.lang === 'ru-RU');
+            if (russianVoice) {
+                utterance.voice = russianVoice;
+            }
+            
+            speechSynthesis.speak(utterance);
+            
+            // Произнести случайную ободряющую фразу
+            setTimeout(() => {
+                if (Math.random() > 0.5) {
+                    const phrase = voicePhrases[Math.floor(Math.random() * voicePhrases.length)];
+                    const encouragement = new SpeechSynthesisUtterance(phrase);
+                    encouragement.lang = 'ru-RU';
+                    encouragement.rate = 1.0;
+                    encouragement.volume = 0.8;
+                    speechSynthesis.speak(encouragement);
+                }
+            }, utterance.duration * 1000);
+        }
+
+        // Показать визуальную подсказку
+        function showVisualHint(elementType) {
+            if (!appData.visualHints) return;
+            
+            let targetElement;
+            
+            switch(elementType) {
+                case 'contact-list':
+                    targetElement = document.querySelector('.large-contact-item');
+                    break;
+                case 'message-input':
+                    targetElement = document.getElementById('message-input');
+                    break;
+                case 'voice-button':
+                    targetElement = document.getElementById('voice-message');
+                    break;
+                case 'settings-tab':
+                    targetElement = document.querySelector('.app-tab[data-tab="settings"]');
+                    break;
+                case 'contacts':
+                    targetElement = elements.contactsList;
+                    break;
+                default:
+                    return;
+            }
+            
+            if (!targetElement) return;
+            
+            const rect = targetElement.getBoundingClientRect();
+            
+            // Анимация курсора
+            elements.cursorAnimation.style.left = (rect.left + rect.width / 2) + 'px';
+            elements.cursorAnimation.style.top = (rect.top - 50) + 'px';
+            elements.cursorAnimation.style.display = 'block';
+            
+            // Подсветка области
+            elements.highlightArea.style.left = (rect.left - 10) + 'px';
+            elements.highlightArea.style.top = (rect.top - 10) + 'px';
+            elements.highlightArea.style.width = (rect.width + 20) + 'px';
+            elements.highlightArea.style.height = (rect.height + 20) + 'px';
+            elements.highlightArea.style.display = 'block';
+            
+            // Автоматическое скрытие
+            setTimeout(() => {
+                elements.cursorAnimation.style.display = 'none';
+                elements.highlightArea.style.display = 'none';
+            }, 5000);
+        }
+
+        // Показать скриншот/демонстрацию
+        function showScreenshot(title, text) {
+            elements.screenshotText.textContent = text;
+            elements.screenshotOverlay.style.display = 'flex';
+            
+            // Добавить анимацию появления
+            setTimeout(() => {
+                elements.screenshotOverlay.style.opacity = '1';
+            }, 10);
+            
+            // Воспроизведение звука
+            playSound('screenshot-show');
+        }
+
+        // Воспроизведение звуков
+        function playSound(soundType) {
+            if (!appData.voiceEnabled) return;
+            
+            // Здесь можно добавить реальные звуковые файлы
+            const sounds = {
+                'open-chat': 800,
+                'send-message': 1200,
+                'receive-message': 600,
+                'complete-step': 1000,
+                'next-step': 500,
+                'prev-step': 400,
+                'tutorial-complete': 1500,
+                'screenshot-show': 300
+            };
+            
+            const frequency = sounds[soundType] || 440;
+            
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = frequency;
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.2);
+            } catch (e) {
+                console.log('Web Audio API не поддерживается');
+            }
+        }
+
+        // Показать уведомление
+        function showNotification(title, message, type = 'info') {
+            // Создаем уведомление
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#4CC9F0' : type === 'warning' ? '#FFD166' : '#4361EE'};
+                color: white;
+                padding: 20px;
+                border-radius: 15px;
+                max-width: 300px;
+                box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+                font-family: inherit;
+            `;
+            
+            notification.innerHTML = `
+                <div style="font-weight: 700; font-size: 18px; margin-bottom: 8px;">${title}</div>
+                <div style="font-size: 16px; opacity: 0.9;">${message}</div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Автоматическое скрытие
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(100px)';
+                setTimeout(() => notification.remove(), 300);
+            }, 5000);
+        }
+
+        // Получение текущего времени
+        function getCurrentTime() {
+            const now = new Date();
+            return `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+        }
+
+        // Настройка обработчиков событий
+        function setupEventListeners() {
+            // Выбор уровня сложности
+            elements.difficultyButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    elements.difficultyButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    
+                    appData.difficulty = btn.dataset.level;
+                    
+                    // Обновить инструкции для выбранного уровня
+                    updateStep(appData.currentStep);
+                    
+                    showNotification(
+                        'Уровень сложности изменен',
+                        `Выбран ${btn.dataset.level === 'basic' ? 'базовый' : 'расширенный'} уровень`,
+                        'success'
+                    );
+                });
+            });
+
+            // Голосовое управление
+            elements.voicePlay.addEventListener('click', () => {
+                speakInstruction(appData.currentStep);
+                elements.voicePlay.classList.add('active');
+                setTimeout(() => elements.voicePlay.classList.remove('active'), 300);
+            });
+
+            elements.voicePause.addEventListener('click', () => {
+                speechSynthesis.pause();
+                elements.voicePause.classList.add('active');
+                setTimeout(() => elements.voicePause.classList.remove('active'), 300);
+            });
+
+            elements.voiceStop.addEventListener('click', () => {
+                speechSynthesis.cancel();
+                elements.voiceStop.classList.add('active');
+                setTimeout(() => elements.voiceStop.classList.remove('active'), 300);
+            });
+
+            // Навигация обучения
+            elements.prevStep.addEventListener('click', prevStep);
+            elements.nextStep.addEventListener('click', nextStep);
+
+            // Отправка сообщения
+            elements.sendMessage.addEventListener('click', sendNewMessage);
+            elements.messageInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendNewMessage();
+                }
+            });
+
+            // Назад к списку чатов
+            elements.backButton.addEventListener('click', () => {
+                elements.chatScreen.style.display = 'none';
+                elements.contactsList.style.display = 'flex';
+                
+                document.querySelector('.header-title h1').textContent = 'Чаты';
+                document.querySelector('.header-title p').textContent = '5 непрочитанных';
+                
+                playSound('back-button');
+            });
+
+            // Вкладки приложения
+            elements.appTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    elements.appTabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    const tabName = tab.dataset.tab;
+                    
+                    if (tabName === 'chats') {
+                        elements.contactsList.style.display = 'flex';
+                        elements.chatScreen.style.display = 'none';
+                    } else if (tabName === 'settings') {
+                        if (appData.currentStep === 4) {
+                            completeStep(4);
+                            nextStep();
+                        }
+                        showScreenshot('Настройки приложения', 'Здесь можно настроить уведомления, внешний вид и конфиденциальность.');
+                    }
+                    
+                    playSound('tab-switch');
+                });
+            });
+
+            // Кнопка помощи
+            elements.helpButton.addEventListener('click', () => {
+                showScreenshot(
+                    'Помощь по симулятору',
+                    'Используйте крупные кнопки для навигации. Следуйте голосовым инструкциям. Визуальные подсказки помогут вам освоиться. Вы можете изменить уровень сложности в левой панели.'
+                );
+            });
+
+            // Закрытие скриншота
+            elements.closeScreenshot.addEventListener('click', () => {
+                elements.screenshotOverlay.style.opacity = '0';
+                setTimeout(() => {
+                    elements.screenshotOverlay.style.display = 'none';
+                }, 300);
+            });
+
+            // Быстрые действия в чате
+            document.getElementById('voice-message').addEventListener('click', () => {
+                if (appData.currentStep === 3) {
+                    completeStep(3);
+                    nextStep();
+                }
+                showScreenshot(
+                    'Голосовые сообщения',
+                    'Нажмите и удерживайте кнопку для записи голосового сообщения. Отпустите для отправки. Это удобно для быстрой коммуникации.'
+                );
+            });
+
+            document.getElementById('attach-file').addEventListener('click', () => {
+                showScreenshot(
+                    'Вложения',
+                    'Вы можете прикреплять фотографии, документы, видео и аудиофайлы. Максимальный размер файла - 100 МБ.'
+                );
+            });
+
+            document.getElementById('send-emoji').addEventListener('click', () => {
+                showScreenshot(
+                    'Эмодзи и стикеры',
+                    'Добавьте эмоций в ваши сообщения с помощью эмодзи и анимированных стикеров.'
+                );
+            });
+
+            // Настройки
+            document.getElementById('settings-notifications').addEventListener('click', () => {
+                showScreenshot(
+                    'Настройки уведомлений',
+                    'Настройте звуковые оповещения, вибрацию и световые индикаторы для новых сообщений.'
+                );
+            });
+
+            // Кнопка Home на телефоне
+            document.getElementById('home-button').addEventListener('click', () => {
+                // Возврат на главный экран
+                elements.appTabs.forEach(t => t.classList.remove('active'));
+                document.querySelector('.app-tab[data-tab="chats"]').classList.add('active');
+                
+                elements.contactsList.style.display = 'flex';
+                elements.chatScreen.style.display = 'none';
+                
+                showNotification('Главный экран', 'Вы вернулись на главный экран', 'info');
+                playSound('home-button');
+            });
+
+            // Автоматическое изменение высоты textarea
+            elements.messageInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+            });
+
+            // Обработка кликов по шагам обучения
+            document.querySelectorAll('.step-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const stepNumber = parseInt(item.dataset.step);
+                    updateStep(stepNumber);
+                    if (appData.voiceEnabled) {
+                        speakInstruction(stepNumber);
+                    }
+                });
+            });
+
+            // Дополнительные события для улучшения UX
+            document.addEventListener('keydown', (e) => {
+                // Горячие клавиши
+                if (e.altKey) {
+                    switch(e.key) {
+                        case '1':
+                            updateStep(1);
+                            break;
+                        case '2':
+                            updateStep(2);
+                            break;
+                        case '3':
+                            updateStep(3);
+                            break;
+                        case '4':
+                            updateStep(4);
+                            break;
+                        case 'h':
+                            elements.helpButton.click();
+                            break;
+                    }
+                }
+            });
+
+            // Сенсорные жесты для мобильных устройств
+            let touchStartX = 0;
+            let touchStartY = 0;
+            
+            document.addEventListener('touchstart', (e) => {
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
+            });
+            
+            document.addEventListener('touchend', (e) => {
+                const touchEndX = e.changedTouches[0].clientX;
+                const touchEndY = e.changedTouches[0].clientY;
+                
+                const diffX = touchEndX - touchStartX;
+                const diffY = touchEndY - touchStartY;
+                
+                // Горизонтальный свайп для навигации
+                if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+                    if (diffX > 0) {
+                        // Свайп вправо - назад
+                        if (appData.currentChatId) {
+                            elements.backButton.click();
+                        }
+                    } else {
+                        // Свайп влево - следующий шаг
+                        nextStep();
+                    }
+                }
+            });
+        }
+
+        // Добавление CSS для уведомлений
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    opacity: 0;
+                    transform: translateX(100px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
